@@ -68,7 +68,8 @@ footer{text-align:center;color:var(--muted);font-size:11px;margin-top:34px}
 
 <div class="card">
 <div class="field"><span class="lbl">Jenis perangkat</span><div class="grid2" id="gPlatform"></div></div>
-<div class="field"><span class="lbl">Tipe / nama unit</span><input type="text" id="nama" placeholder="contoh: Redmi Note 13 8/256"></div>
+<div class="field"><span class="lbl">Tipe / nama unit</span><input type="text" id="nama" placeholder="contoh: Redmi Note 13"></div>
+<div class="field"><span class="lbl">RAM / Memori</span><input type="text" id="ram" placeholder="contoh: 8/256"><div class="hint">Isi manual: RAM / penyimpanan, contoh 8/256 atau 6/128</div></div>
 <div class="field"><span class="lbl">Status unit</span><div class="grid2" id="gStatus"></div></div>
 <div class="field"><span class="lbl">Wilayah transaksi</span>
 <select id="wilayah">
@@ -229,6 +230,8 @@ st.textContent=pesan}
 document.getElementById("btnAI").onclick=async function(){
 var key=document.getElementById("apikey").value.trim();
 var nama=document.getElementById("nama").value.trim();
+var ramAI=document.getElementById("ram").value.trim();
+if(ramAI)nama=nama+" "+ramAI;
 var btn=this;
 if(!key){tampilStatus("err","Isi dulu API key-nya.");return}
 if(!nama){tampilStatus("err","Isi dulu nama unitnya di atas.");return}
@@ -261,6 +264,8 @@ function hitung(){
 var pasaranInput=parseInt(document.getElementById("pasaran").value,10);
 var margin=parseInt(document.getElementById("margin").value,10);
 var nama=document.getElementById("nama").value.trim()||"Unit tanpa nama";
+var ram=document.getElementById("ram").value.trim();
+if(ram)nama=nama+" "+ram;
 var wilayahId=document.getElementById("wilayah").value;
 if(!pasaranInput||pasaranInput<100000){alert("Isi dulu harga pasarnya ya (minimal 100.000).");return}
 var pasaran=pasaranInput*FAKTOR_WILAYAH[wilayahId];
@@ -290,4 +295,5 @@ document.getElementById("result").scrollIntoView({behavior:"smooth",block:"neare
 </script>
 
 </body>
-</html>
+  </html>
+  
