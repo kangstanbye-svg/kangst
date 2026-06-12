@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator Harga Ambil — Kangstanbye Cell</title>
+<style>
+:root{--bg:#141926;--card:#1C2230;--card2:#232B3D;--line:#2A3344;--text:#EDF0F7;--muted:#8C95AB;--accent:#FFB703;--good:#34D399;--warn:#F87171}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:system-ui,sans-serif;min-height:100vh;padding:20px 16px 60px;max-width:540px;margin:0 auto}
+header{margin-bottom:22px}
+.brand{font-weight:800;font-size:26px;letter-spacing:-.5px}
+.brand span{color:var(--accent)}
+.tagline{color:var(--muted);font-size:13px;margin-top:3px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+.lbl{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
+.field{margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+input[type=text],input[type=number],input[type=password],select{width:100%;background:var(--card2);border:1px solid var(--line);border-radius:10px;color:var(--text);font-size:16px;padding:12px 14px;outline:none;appearance:none}
+input:focus,select:focus{border-color:var(--accent)}
+.hint{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.45}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:11px 8px;text-align:center;cursor:pointer;font-size:13px;font-weight:500;color:var(--text)}
+.opt .ic{font-size:18px;display:block;margin-bottom:3px}
+.opt.on{border-color:var(--accent);background:rgba(255,183,3,.1)}
+.kond{display:flex;align-items:flex-start;gap:10px;background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px;cursor:pointer;width:100%;text-align:left;color:var(--text)}
+.kond.on{border-color:var(--accent);background:rgba(255,183,3,.1)}
+.kond .t{font-size:14px;font-weight:600}
+.kond .d{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4}
+.kond .pct{margin-left:auto;font-size:12px;color:var(--accent);font-weight:600;white-space:nowrap}
+.chk{display:flex;align-items:center;gap:8px;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text)}
+.chk.on{border-color:var(--accent)}
+.chk .box{width:18px;height:18px;border-radius:5px;border:2px solid var(--muted);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#141926}
+.chk.on .box{background:var(--accent);border-color:var(--accent)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;background:var(--line);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 0 5px rgba(255,183,3,.18)}
+.range-val{font-weight:800;font-size:17px;color:var(--accent)}
+.tabs{display:flex;background:var(--card2);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.tabs button{flex:1;background:none;border:none;color:var(--muted);font-size:13px;font-weight:600;padding:11px 4px;cursor:pointer}
+.tabs button.on{background:var(--accent);color:#141926}
+.btn{width:100%;border:none;border-radius:12px;font-weight:800;font-size:16px;padding:14px;cursor:pointer}
+.btn-main{background:var(--accent);color:#141926}
+.btn-main:disabled{opacity:.5}
+.btn-ghost{background:var(--card2);color:var(--text);border:1px solid var(--line);font-size:14px;padding:12px}
+.ai-status{font-size:13px;margin-top:10px;line-height:1.5;display:none}
+.ai-status.show{display:block}
+.ai-status.loading{color:var(--accent)}
+.ai-status.err{color:var(--warn)}
+.ai-status.ok{color:var(--good)}
+.result{background:linear-gradient(135deg,#222A3E,#1C2230);border:1px solid var(--accent);border-radius:16px;padding:20px 18px;margin-bottom:14px;display:none}
+.result.show{display:block}
+.label-big{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:1px}
+.price{font-weight:800;font-size:34px;letter-spacing:-1px;margin:6px 0 14px}
+.rows{border-top:1px dashed var(--line);padding-top:12px}
+.row{display:flex;justify-content:space-between;font-size:14px;padding:5px 0}
+.row span:first-child{color:var(--muted)}
+.row .good{color:var(--good);font-weight:600}
+.row .warn{color:var(--warn)}
+footer{text-align:center;color:var(--muted);font-size:11px;margin-top:34px}
+</style>
+</head>
+<body>
+
+<header>
+<div class="brand">kangstanbye <span>cell</span></div>
+<div class="tagline">Kalkulator harga ambil · HP &amp; laptop second · Lombok</div>
+</header>
+
+<div class="card">
+<div class="field"><span class="lbl">Jenis perangkat</span><div class="grid2" id="gPlatform"></div></div>
+<div class="field"><span class="lbl">Tipe / nama unit</span><input type="text" id="nama" placeholder="contoh: Redmi Note 13 8/256"></div>
+<div class="field"><span class="lbl">Status unit</span><div class="grid2" id="gStatus"></div></div>
+<div class="field"><span class="lbl">Wilayah transaksi</span>
+<select id="wilayah">
+<option value="mataram">Mataram</option>
+<option value="lombok_barat">Lombok Barat</option>
+<option value="lombok_tengah">Lombok Tengah (+1%)</option>
+<option value="lombok_timur">Lombok Timur (+2%)</option>
+</select>
+<div class="hint">Di luar Mataram stok lebih terbatas, harga pasar sedikit lebih tinggi</div>
+</div>
+</div>
+
+<div class="card">
+<span class="lbl">Harga pasar (kondisi mulus fullset)</span>
+<div class="tabs">
+<button type="button" id="tabManual" class="on">Manual</button>
+<button type="button" id="tabAI">Cari pakai AI</button>
+</div>
+<div id="paneManual">
+<input type="number" id="pasaran" inputmode="numeric" placeholder="contoh: 1800000">
+<div class="hint">Cek FB Marketplace / OLX Lombok, isi angka tanpa titik</div>
+</div>
+<div id="paneAI" style="display:none">
+<div class="field">
+<span class="lbl">API key Anthropic</span>
+<input type="password" id="apikey" placeholder="sk-ant-...">
+<div class="hint">Key hanya dipakai di HP kamu, tidak disimpan. Buat di console.anthropic.com (berbayar per pemakaian).</div>
+</div>
+<button class="btn btn-ghost" type="button" id="btnAI">🔍 Cari harga pasar otomatis</button>
+<div class="ai-status" id="aiStatus"></div>
+</div>
+</div>
+
+<div class="card"><span class="lbl">Kondisi unit</span><div id="gKondisi"></div></div>
+
+<div class="card">
+<span class="lbl">Kelengkapan</span>
+<div class="grid2" id="gLengkap" style="margin-bottom:10px"></div>
+<div class="grid2" id="gItems"></div>
+<div class="hint" id="hintLengkap" style="margin-top:8px"></div>
+</div>
+
+<div class="card">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<span class="lbl" style="margin:0">Target margin</span>
+<span class="range-val" id="marginVal">Rp 150.000</span>
+</div>
+<input type="range" id="margin" min="50000" max="500000" step="25000" value="150000">
+</div>
+
+<button class="btn btn-main" onclick="hitung()" style="margin-bottom:14px">Hitung harga ambil</button>
+
+<div class="result" id="result">
+<div class="label-big">Harga ambil maksimal</div>
+<div class="price" id="rAmbil">Rp 0</div>
+<div class="rows">
+<div class="row"><span>Unit</span><span id="rUnit"></span></div>
+<div class="row"><span>Estimasi harga jual</span><span id="rJual"></span></div>
+<div class="row"><span>Buka nego dari</span><span id="rNego"></span></div>
+<div class="row"><span>Margin</span><span class="good" id="rMargin"></span></div>
+<div class="row"><span>Total potongan</span><span class="warn" id="rPotong"></span></div>
+</div>
+</div>
+
+<footer>kangstanbye cell · hitung cepat, ambil aman</footer>
+
+<script>
+var PLATFORMS=[
+{id:"android",label:"Android",icon:"🤖"},
+{id:"iphone",label:"iPhone",icon:"🍎"},
+{id:"macbook",label:"MacBook",icon:"💻"},
+{id:"windows",label:"Laptop Windows",icon:"🪟"}];
+
+var STATUS_UNIT=[
+{id:"baru",label:"Baru / BNIB",icon:"🆕"},
+{id:"second",label:"Second",icon:"♻️"}];
+
+var KONDISI=[
+{id:"mulus",label:"Mulus",icon:"✨",faktor:1.0,desc:"Like new, no minus, fungsi & fisik normal"},
+{id:"minus_ringan",label:"Minus Ringan",icon:"🟢",faktor:0.92,desc:"Lecet halus / baret wajar, fungsi normal"},
+{id:"minus_sedang",label:"Minus Sedang",icon:"🟡",faktor:0.80,desc:"Baret kelihatan / minus 1 fungsi minor"},
+{id:"minus_berat",label:"Minus Berat",icon:"🔴",faktor:0.62,desc:"Retak/pecah, shadow LCD, minus fungsi penting"}];
+
+var KELENGKAPAN=[
+{id:"fullset",label:"Fullset",icon:"📦"},
+{id:"batangan",label:"Batangan",icon:"📱"}];
+
+var ITEM_LENGKAP=[
+{id:"dus",label:"Dus",bonus:0.030},
+{id:"charger",label:"Charger",bonus:0.025},
+{id:"kabel",label:"Kabel data",bonus:0.015},
+{id:"nota",label:"Nota/box ori",bonus:0.020}];
+
+var FAKTOR_WILAYAH={mataram:1.00,lombok_barat:1.00,lombok_tengah:1.01,lombok_timur:1.02};
+var WILAYAH_LABEL={mataram:"Mataram",lombok_barat:"Lombok Barat",lombok_tengah:"Lombok Tengah",lombok_timur:"Lombok Timur"};
+
+var state={platform:"android",status:"second",kondisi:"mulus",lengkap:"fullset",items:{dus:false,charger:false,kabel:false,nota:false}};
+
+function rp(n){if(n==null||isNaN(n))return"-";return"Rp "+Math.round(n).toLocaleString("id-ID")}
+function bulat25(n){return Math.round(n/25000)*25000}
+
+function renderOpts(elId,data,key,onPick){
+var el=document.getElementById(elId);el.innerHTML="";
+data.forEach(function(d){
+var b=document.createElement("button");b.type="button";
+b.className="opt"+(state[key]===d.id?" on":"");
+b.innerHTML='<span class="ic">'+d.icon+'</span>'+d.label;
+b.onclick=function(){state[key]=d.id;renderOpts(elId,data,key,onPick);if(onPick)onPick()};
+el.appendChild(b)})}
+
+function renderKondisi(){
+var el=document.getElementById("gKondisi");el.innerHTML="";
+KONDISI.forEach(function(k){
+var b=document.createElement("button");b.type="button";
+b.className="kond"+(state.kondisi===k.id?" on":"");
+b.innerHTML='<span>'+k.icon+'</span><span><span class="t">'+k.label+'</span><div class="d">'+k.desc+'</div></span><span class="pct">'+Math.round(k.faktor*100)+'%</span>';
+b.onclick=function(){state.kondisi=k.id;renderKondisi()};
+el.appendChild(b)})}
+
+function renderItems(){
+var wrap=document.getElementById("gItems");
+var hint=document.getElementById("hintLengkap");
+if(state.lengkap==="fullset"){wrap.style.display="none";hint.textContent="Fullset = dus, charger, kabel & kelengkapan lengkap (100%)";return}
+wrap.style.display="grid";
+hint.textContent="Batangan mulai dari 88% — centang yang ikut biar nilainya naik";
+wrap.innerHTML="";
+ITEM_LENGKAP.forEach(function(it){
+var b=document.createElement("button");b.type="button";
+b.className="chk"+(state.items[it.id]?" on":"");
+b.innerHTML='<span class="box">'+(state.items[it.id]?"✓":"")+'</span>'+it.label;
+b.onclick=function(){state.items[it.id]=!state.items[it.id];renderItems()};
+wrap.appendChild(b)})}
+
+renderOpts("gPlatform",PLATFORMS,"platform");
+renderOpts("gStatus",STATUS_UNIT,"status");
+renderKondisi();
+renderOpts("gLengkap",KELENGKAPAN,"lengkap",renderItems);
+renderItems();
+
+document.getElementById("margin").addEventListener("input",function(){
+document.getElementById("marginVal").textContent=rp(parseInt(this.value,10))});
+
+var tabManual=document.getElementById("tabManual");
+var tabAI=document.getElementById("tabAI");
+function setTab(ai){
+tabManual.classList.toggle("on",!ai);
+tabAI.classList.toggle("on",ai);
+document.getElementById("paneManual").style.display=ai?"none":"block";
+document.getElementById("paneAI").style.display=ai?"block":"none"}
+tabManual.onclick=function(){setTab(false)};
+tabAI.onclick=function(){setTab(true)};
+
+function tampilStatus(tipe,pesan){
+var st=document.getElementById("aiStatus");
+st.className="ai-status show "+tipe;
+st.textContent=pesan}
+
+document.getElementById("btnAI").onclick=async function(){
+var key=document.getElementById("apikey").value.trim();
+var nama=document.getElementById("nama").value.trim();
+var btn=this;
+if(!key){tampilStatus("err","Isi dulu API key-nya.");return}
+if(!nama){tampilStatus("err","Isi dulu nama unitnya di atas.");return}
+btn.disabled=true;
+tampilStatus("loading","Mencari harga pasar "+nama+" di marketplace Indonesia…");
+var wilayah=WILAYAH_LABEL[document.getElementById("wilayah").value];
+var statusLbl=state.status==="baru"?"baru/BNIB":"second/bekas";
+var prompt="Cari harga pasar wajar saat ini untuk "+nama+" kondisi "+statusLbl+" mulus fullset di marketplace Indonesia (FB Marketplace, OLX, Shopee, Tokopedia), khususnya area "+wilayah+", Lombok, NTB jika ada. Jawab HANYA JSON valid tanpa teks lain: {\"harga_pasar\":angka,\"keterangan\":\"1 kalimat\"}";
+try{
+var resp=await fetch("https://api.anthropic.com/v1/messages",{
+method:"POST",
+headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+body:JSON.stringify({model:"claude-sonnet-4-6",max_tokens:1024,messages:[{role:"user",content:prompt}],tools:[{type:"web_search_20250305",name:"web_search"}]})});
+if(!resp.ok){
+var errBody=await resp.json().catch(function(){return{}});
+throw new Error((errBody.error&&errBody.error.message)||("HTTP "+resp.status))}
+var data=await resp.json();
+var text=(data.content||[]).map(function(c){return c.type==="text"?c.text:""}).join("");
+var m=text.replace(/```json|```/g,"").match(/\{[\s\S]*\}/);
+if(!m)throw new Error("Jawaban AI tidak terbaca, coba lagi.");
+var hasil=JSON.parse(m[0]);
+if(!hasil.harga_pasar||isNaN(hasil.harga_pasar))throw new Error("Harga tidak ketemu, coba nama unit lebih spesifik.");
+document.getElementById("pasaran").value=Math.round(hasil.harga_pasar);
+tampilStatus("ok","✓ Ketemu: "+rp(hasil.harga_pasar)+(hasil.keterangan?" — "+hasil.keterangan:"")+" (sudah diisi otomatis)");
+setTab(false)
+}catch(e){tampilStatus("err","Gagal: "+e.message)}
+finally{btn.disabled=false}};
+
+function hitung(){
+var pasaranInput=parseInt(document.getElementById("pasaran").value,10);
+var margin=parseInt(document.getElementById("margin").value,10);
+var nama=document.getElementById("nama").value.trim()||"Unit tanpa nama";
+var wilayahId=document.getElementById("wilayah").value;
+if(!pasaranInput||pasaranInput<100000){alert("Isi dulu harga pasarnya ya (minimal 100.000).");return}
+var pasaran=pasaranInput*FAKTOR_WILAYAH[wilayahId];
+var fKondisi=1.0;
+KONDISI.forEach(function(k){if(k.id===state.kondisi)fKondisi=k.faktor});
+var fLengkap=1.0;
+if(state.lengkap==="batangan"){
+fLengkap=0.88;
+ITEM_LENGKAP.forEach(function(it){if(state.items[it.id])fLengkap+=it.bonus});
+if(fLengkap>1.0)fLengkap=1.0}
+var jual=bulat25(pasaran*fKondisi*fLengkap);
+var ambil=bulat25(jual-margin);
+var nego=bulat25(ambil-50000);
+var potong=pasaranInput-jual;
+if(ambil<=0){alert("Margin terlalu besar untuk harga segini. Kecilkan marginnya.");return}
+var kondLbl="";
+KONDISI.forEach(function(k){if(k.id===state.kondisi)kondLbl=k.label});
+var lengkapLbl=state.lengkap==="fullset"?"Fullset":"Batangan";
+document.getElementById("rAmbil").textContent=rp(ambil);
+document.getElementById("rUnit").textContent=nama+" · "+lengkapLbl+" · "+kondLbl;
+document.getElementById("rJual").textContent=rp(jual);
+document.getElementById("rNego").textContent=rp(nego>0?nego:ambil);
+document.getElementById("rMargin").textContent="+ "+rp(jual-ambil);
+document.getElementById("rPotong").textContent=potong>0?"- "+rp(potong):"Tidak ada";
+document.getElementById("result").classList.add("show");
+document.getElementById("result").scrollIntoView({behavior:"smooth",block:"nearest"})}
+</script>
+
+</body>
+</html>
